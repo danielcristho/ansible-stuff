@@ -1,0 +1,30 @@
+---
+- name: Install MySQL
+  ansible.builtin.apt:
+    name:
+      - mysql-server
+      - mysql-client
+      - python3-mysqldb
+    state: present
+
+- name: Create Database
+  community.mysql.mysql_db:
+    name: '{{ db_name }}'
+    state: present
+
+- name: Config user
+  community.mysql.mysql_user:
+    name: '{{ db_user }}'
+    password: '{{ db_pass }}'
+    encrypted: true
+    priv: '{{ db_name }}.*:ALL'
+    state: present
+
+- name: Enable remote login to mysql
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+    backup: true
+  notify:
+    - Restart mysql

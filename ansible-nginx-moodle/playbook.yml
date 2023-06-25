@@ -1,0 +1,10 @@
+---
+- name: Setup server for Moodle
+  hosts: all
+  become: true
+  remote_user: root
+  roles:
+    - config
+    - nginx
+    - mysql
+    - moodle

@@ -1,0 +1,4 @@
+---
+db_name: moodle
+db_user: moodle_user
+db_pass: '*DAC2998633C90DA17067A5C69E20E31891ED4DAB' #moodle_pass, generate password using : https://www.browserling.com/tools/mysql-password
