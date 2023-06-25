@@ -1,0 +1,30 @@
+---
+- name: Update&Upgrade
+  ansible.builtin.apt:
+    name: aptitude
+    state: present
+    update_cache: true
+
+- name: Install dependencies
+  ansible.builtin.apt:
+    name:
+      - net-tools
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+      - gnupg-agent
+      - autoconf
+      - dpkg-dev
+      - file
+      - g++
+      - gcc
+      - libc-dev
+      - make
+      - pkg-config
+      - re2c
+    state: present
+    update_cache: true

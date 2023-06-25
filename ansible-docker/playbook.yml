@@ -1,0 +1,8 @@
+---
+- name: Setup Docker on Ubuntu Server 22.04
+  hosts: all
+  become: true
+  remote_user: root
+  roles:
+    - config
+    - docker
