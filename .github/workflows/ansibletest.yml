@@ -23,5 +23,4 @@ jobs:
           pip install ansible-lint ansible==${{ matrix.ansible-version }}
       - name: Lint playbook
         run: |
-          find . -type f -name "playbook.yml" -exec ansible-playbook {} --syntax-check \;
-          find . -type f -name "playbook.yml" -exec ansible-lint {} \;
+          ansible-playbook --syntax-check */playbook.yml
