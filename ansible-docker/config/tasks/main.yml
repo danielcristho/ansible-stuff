@@ -26,5 +26,6 @@
       - make
       - pkg-config
       - re2c
+      - wget
     state: present
     update_cache: true
