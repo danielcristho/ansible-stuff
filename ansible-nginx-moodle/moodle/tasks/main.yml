@@ -21,4 +21,10 @@
     state: present
     update_cache: true
 
-- name:
+- name: Add config.ini
+  ansible.builtin.template:
+    src: config.js
+    dest: /etc/php/8.2/fpm.ini
+    mode: preserve
+
+- name: Restart FPM
