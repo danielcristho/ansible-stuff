@@ -4,7 +4,7 @@
     repo: "ppa:ondrej/php"
     state: present
 
-- name: Install PHP & dependencies
+- name: Install PHP 8.2 & dependencies
   ansible.builtin.apt:
     name:
       - php8.2-mysql
@@ -28,3 +28,13 @@
     mode: preserve
 
 - name: Restart FPM
+  ansible.builtin.service:
+    name: php8.2-fpm
+    state: restarted
+    enabled: true
+
+- name: Download specific Moodle version
+  ansible.builtin.git:
+    repo: "{{ moodle_git_repository }}"
+    dest: "{{ moodle_root_path }}"
+    version: "MOODLE_{{ moodle_version.split('.')[0] }}{{ moodle_version.split('.')[1] }}_STABLE"

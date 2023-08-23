@@ -1,10 +1,11 @@
 - name: Update & Upgrade
-  apt:
+  ansible.builtin.apt:
     name: aptitude
     state: present
     update_cache: true
+
 - name: Install dependencies
-  apt:
+  ansible.builtin.apt:
     name:
       - net-tools
       - apt-transport-https
@@ -26,3 +27,6 @@
       - re2c
     state: present
     update_cache: true
+
+
+
