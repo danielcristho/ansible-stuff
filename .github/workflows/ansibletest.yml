@@ -1,7 +1,7 @@
 name: ansible-lint
 on:
-  pull_request:
-    branches: ["main", "stable", "release/v*"]
+  push:
+
 jobs:
   build:
     name: Check the .yml using ansible lint
