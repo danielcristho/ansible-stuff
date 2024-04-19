@@ -1,7 +1,8 @@
 ---
-- name: Deploy Laravel App Using Swoole Runtime
+- name: Deploy Laravel App With Swoole
   hosts: all
   become: true
   remote_user: root
   roles:
     - config
+    - laravel

@@ -1,0 +1,9 @@
+---
+- name: Clone laravel project
+  ansible.builtin.git:
+    repo: https://github.com/laravel/laravel.git
+    dest: /var/www/
+    clone: true
+
+
+- name:

@@ -1,0 +1,22 @@
+---
+- name: Restart supervisor
+  ansible.builtin.systemd:
+    name: supervisor
+    state: restarted
+    enabled: true
+
+- name: Supervisor restart
+  community.general.supervisorctl:
+    name: all
+    state: present
+
+- name: Supervisor restart
+  community.general.supervisorctl:
+    name: all
+    state: restarted
+
+- name: Restart nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    enabled: true

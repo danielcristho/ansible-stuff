@@ -4,7 +4,7 @@
     repo: "ppa:ondrej/php"
     state: present
 
-- name: Install PHP 8.2 & dependencies
+- name: Install packages
   ansible.builtin.apt:
     name:
       - php8.2-mysql
@@ -19,6 +19,8 @@
       - php8.2-gd
       - php8.2-swoole
       - php8.2-soap
+      - nginx
+      - composer
     state: present
     update_cache: true
 
@@ -31,7 +33,18 @@
 - name: Add supervisor config
   ansible.builtin.template:
     src: supervisor.j2
-    dest: /etc/supervisor/conf.d/laravel.conf
+    dest: /etc/supervisor/conf.d/laravel_worker.conf
     mode: preserve
 
+- name: Add nginx config
+  ansible.builtin.template:
+    src: nginx.j2
+    dest: /etc/nginx/sites-available/laravel
+    mode: preserve
 
+- name: Create nginx symlink
+  ansible.builtin.command:
+    cmd: ln -s /etc/nginx/sites-available/laravel /etc/nginx/sites-enabled
+    creates: /etc/nginx/sites-enabled/laravel
+  notify:
+    - Restart nginx
