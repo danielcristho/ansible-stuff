@@ -1,0 +1,16 @@
+program:laravel-octane-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php -d variables_order=EGPCS /var/www/laravel/artisan octane:start --server=swoole --max-requests=1000 --workers=4 --task-workers=12 --port=8089
+autostart=true
+autorestart=true
+user=www-data
+redirect_stderr=true
+stdout_logfile=/var/www/laravel/storage/logs/swoole_http.log
+stopwaitsecs=3600
+environment=LARAVEL_SAIL="1"
+
+[supervisord]
+nodaemon=true
+user=root
+logfile=/var/log/supervisor/supervisord.log
+pidfile=/var/run/supervisord.pid
