@@ -8,5 +8,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
+      - name: Install Ansible Galaxy dependencies
+        run: |
+          ansible-galaxy collection install community.general
+          ansible-galaxy collection install community.mysql
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main

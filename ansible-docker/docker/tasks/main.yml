@@ -26,7 +26,6 @@
     append: true
     sudo_user: true
 
-
 - name: Install Docker module for Python
   ansible.builtin.pip:
     name: docker
