@@ -5,4 +5,4 @@
   remote_user: root
   roles:
     - config
-    # - laravel
+    - laravel

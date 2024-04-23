@@ -5,5 +5,14 @@
     dest: /var/www/
     clone: true
 
+- name: Run composer install
+  ansible.builtin.command:
+    cmd: composer install
+    chdir: /var/www/laravel
 
-- name:
+- name: Set ownership
+  ansible.builtini.file:
+    path: /var/www/laravel
+    owner: www-data
+    group: www-data
+    recurse: true
