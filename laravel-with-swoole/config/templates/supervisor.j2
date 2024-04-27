@@ -1,4 +1,4 @@
-program:laravel-octane-worker]
+[program:laravel-octane-worker]
 process_name=%(program_name)s_%(process_num)02d
 command=php -d variables_order=EGPCS /var/www/laravel/artisan octane:start --server=swoole --max-requests=1000 --workers=4 --task-workers=12 --port=8089
 autostart=true

@@ -20,7 +20,8 @@
       - php8.2-swoole
       - php8.2-soap
       - nginx
-      - composer
+      - supervisor
+      - net-tools
     state: present
     update_cache: true
 
@@ -35,6 +36,9 @@
     src: supervisor.j2
     dest: /etc/supervisor/conf.d/laravel_worker.conf
     mode: preserve
+  notify:
+    - Restart supervisor
+    - Supervisor restart
 
 - name: Add nginx config
   ansible.builtin.template:

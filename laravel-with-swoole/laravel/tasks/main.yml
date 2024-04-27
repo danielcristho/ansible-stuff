@@ -1,0 +1,49 @@
+---
+- name: Clone laravel project
+  changed_when: false
+  ansible.builtin.git:
+    repo: https://github.com/laravel/laravel.git
+    dest: /var/www/laravel
+    clone: true
+
+- name: Set mode
+  ansible.builtin.file:
+    path: /var/www/laravel
+    state: directory
+    recurse: true
+    mode: "775"
+
+- name: Set ownership
+  ansible.builtin.file:
+    path: /var/www/laravel
+    owner: www-data
+    group: www-data
+    recurse: true
+    mode: "0775"
+
+- name: Download Composer installer
+  ansible.builtin.get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-setup.php
+    mode: '0644'
+
+- name: Verify Composer installer
+  ansible.builtin.shell: "php -r \"if (hash_file('sha384', '/tmp/composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { exit(0); } else { exit(1); }\""
+  register: composer_verify
+  changed_when: false
+
+- name: Run Composer installer
+  ansible.builtin.shell: "php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer"
+  when: composer_verify.rc == 0
+
+- name: Clean up Composer installer
+  ansible.builtin.file:
+    path: /tmp/composer-setup.php
+    state: absent
+
+- name: Run composer install
+  ansible.builtin.command:
+    cmd: composer install
+    chdir: /var/www/laravel
+  changed_when: false
+
