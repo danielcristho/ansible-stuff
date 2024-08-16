@@ -1,0 +1,108 @@
+---
+- name: Update&Upgrade
+  ansible.builtin.apt:
+    name: aptitude
+    state: present
+    update_cache: true
+
+- name: Install dependencies
+  ansible.builtin.apt:
+    name:
+      - net-tools
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+      - gnupg-agent
+      - autoconf
+      - dpkg-dev
+      - file
+      - g++
+      - gcc
+      - libc-dev
+      - make
+      - pkg-config
+      - re2c
+      - wget
+    state: present
+    update_cache: true
+
+- name: Add Docker GPG apt Key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add repository into sources list
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
+    state: present
+    filename: docker
+
+- name: Install Docker
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+    update_cache: true
+
+# - name: Setup docker user
+#   ansible.builtin.user:
+#     name: docker
+#     groups: "docker,sudo"
+#     append: true
+
+- name: Add user to docker group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: "docker"
+    append: true
+
+- name: Install Docker module for Python
+  ansible.builtin.pip:
+    name: docker
+
+- name: Install Docker-Compose&Set Permission
+  ansible.builtin.get_url:
+    url: https://github.com/docker/compose/releases/download/v2.28.1/docker-compose-linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: '755'
+
+- name: Create Docker-Compose symlink
+  ansible.builtin.command:
+    cmd: ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    creates: /usr/bin/docker-compose
+
+- name: Download Minikube binary
+  ansible.builtin.get_url:
+    url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    dest: /usr/local/bin/minikube-linux-amd64
+    mode: '755'
+
+- name: Install Minikube
+  ansible.builtin.command:
+    cmd: install /usr/local/bin/minikube-linux-amd64 /usr/local/bin/minikube
+    creates: /usr/local/bin/minikube
+
+- name: Get stable Kubernetes version
+  ansible.builtin.shell: "curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt"
+  register: kubernetes_version
+  changed_when: false
+
+- name: Install Kubectl
+  ansible.builtin.get_url:
+    url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubernetes_version.stdout }}/bin/linux/amd64/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: '755'
+
+- name: Check kubectl version
+  ansible.builtin.command:
+    cmd: kubectl version -o yaml
+
+- name: Start Minikube with Docker driver
+  ansible.builtin.command:
+    cmd: minikube start --driver=docker

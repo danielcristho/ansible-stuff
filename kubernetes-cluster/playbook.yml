@@ -1,0 +1,8 @@
+---
+- name: Install Minikube and deploy simple cluster
+  hosts: all
+  become: true
+  remote_user: vagrant
+  roles:
+    - install-minikube
+    # - deploy-cluster
