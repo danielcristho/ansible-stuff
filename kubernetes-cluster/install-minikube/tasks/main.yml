@@ -56,10 +56,10 @@
 #     groups: "docker,sudo"
 #     append: true
 
-- name: Add user to docker group
+- name: Add vagrant user to docker group
   ansible.builtin.user:
-    name: "{{ ansible_user }}"
-    groups: "docker"
+    name: vagrant
+    groups: docker
     append: true
 
 - name: Install Docker module for Python
@@ -88,6 +88,9 @@
     cmd: install /usr/local/bin/minikube-linux-amd64 /usr/local/bin/minikube
     creates: /usr/local/bin/minikube
 
+- name: Add /usr/local/bin to the PATH
+  ansible.builtin.shell: "export PATH=$PATH:/usr/local/bin"
+
 - name: Get stable Kubernetes version
   ansible.builtin.shell: "curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt"
   register: kubernetes_version
@@ -99,10 +102,14 @@
     dest: /usr/local/bin/kubectl
     mode: '755'
 
+- name: Start Minikube with Docker driver
+  ansible.builtin.command:
+    cmd: minikube start
+
+- name: Enable metrics-server addon in Minikube
+  ansible.builtin.command:
+    cmd: minikube addons enable metrics-server
+
 - name: Check kubectl version
   ansible.builtin.command:
     cmd: kubectl version -o yaml
-
-- name: Start Minikube with Docker driver
-  ansible.builtin.command:
-    cmd: minikube start --driver=docker
