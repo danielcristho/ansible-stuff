@@ -1,0 +1,4 @@
+---
+- name: Apply netplan configuration
+  command: netplan apply
+  become: true

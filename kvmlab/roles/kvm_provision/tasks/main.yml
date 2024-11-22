@@ -1,0 +1,72 @@
+---
+# tasks file for kvm_provision
+
+- name: Ensure requirements in place
+  package:
+    name:
+      - guestfs-tools
+      - python3-libvirt
+    state: present
+  become: true
+
+- name: Get VMs list
+  community.libvirt.virt:
+    command: list_vms
+  register: existing_vms
+  changed_when: no
+
+- name: Create VM if not exists
+  block:
+    - name: Download base image
+      get_url:
+        url: "{{ base_image_url }}"
+        dest: "/tmp/{{ base_image_name }}"
+        checksum: "sha256:{{ base_image_sha }}"
+
+    - name: Copy base image to libvirt directory
+      copy:
+        dest: "{{ libvirt_pool_dir }}/{{ vm_name }}.qcow2"
+        src: "/tmp/{{ base_image_name }}"
+        force: no
+        remote_src: yes
+
+    - name: Configure the image
+      command: |
+        virt-customize -a {{ libvirt_pool_dir }}/{{ vm_name }}.qcow2 \
+        --hostname {{ vm_name }} \
+        --root-password password:{{ vm_root_pass }} \
+        --ssh-inject 'root:file:{{ ssh_key }}'
+
+    - name: Define VM
+      community.libvirt.virt:
+        command: define
+        xml: "{{ lookup('template', 'vm-template.xml.j2') }}"
+
+    - name: Ensure VM is started
+      community.libvirt.virt:
+        name: "{{ vm_name }}"
+        state: running
+
+    - name: KVM Provision role
+      include_role:
+        name: kvm_provision
+      vars:
+        libvirt_pool_dir: "{{ pool_dir }}"
+        vm_name: "{{ vm }}"
+        vm_vcpus: "{{ vcpus }}"
+        vm_ram_mb: "{{ ram_mb }}"
+        vm_net: "{{ net }}"
+        cleanup_tmp: "{{ cleanup }}"
+        ssh_key: "{{ ssh_pub_key }}"
+
+    - name: Ensure netplan is installed
+      apt:
+        name: netplan.io
+        state: present
+      become: true
+
+    - name: Configure IP Address
+      template:
+        src: templates/00-installer-config.yaml.j2
+        dest: /etc/netplan/00-installer-config.yaml
+      notify: Apply netplan configuration

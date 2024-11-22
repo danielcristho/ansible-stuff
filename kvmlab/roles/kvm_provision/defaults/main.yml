@@ -1,0 +1,13 @@
+---
+# defaults file for kvm_provision
+base_image_name: ubuntu-22.04-server-cloudimg-amd64-disk-kvm.img
+base_image_url: https://cloud-images.ubuntu.com/releases/22.04/release/{{ base_image_name }}
+base_image_sha: 9de99fda26f59e0d4b9209ab1d81d619ec95a7ded6b10cffeeee94ba24122c33
+libvirt_pool_dir: "/var/lib/libvirt/images"
+vm_name: ubuntu
+vm_vcpus: 1
+vm_ram_mb: 1024
+vm_net: default
+vm_root_pass: test123
+cleanup_tmp: no
+ssh_key: /root/.ssh/id_rsa.pub
