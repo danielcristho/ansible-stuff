@@ -1,6 +1,6 @@
 .vscode/
 *log
-hosts
+# hosts
 
 # Vagrant
 .vagrant/
